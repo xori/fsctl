@@ -1,7 +1,7 @@
 
 const tape = require('tape')
-const { lock, unlock, sparse } = require('./')
-const { openSync, closeSync, unlinkSync } = require('fs')
+const { lock, unlock, sparse, punch } = require('./')
+const { openSync, closeSync, unlinkSync, writeSync, readSync } = require('fs')
 const { spawnSync } = require('child_process')
 const { tmpdir } = require('os')
 const path = require('path')
@@ -45,6 +45,16 @@ tape('two in one process (new file)', function (assert) {
   assert.end()
 })
 
+tape('two in one process (new file)', function (assert) {
+  const file = path.join(tmpdir(), 'fsctl-testfile-punch')
+  const fd = openSync(file, 'r+')
+  writeSync(fd, "PANDAPANDAPANDAPANDA", 0, 'utf8')
+
+  const res = punch(fd, 1, 10)
+  assert.ok(res, 'could punch hole')
+
+  assert.end()
+})
 
 tape('two in different processes', function (assert) {
   const fd = openSync(__filename, 'r')

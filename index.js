@@ -9,5 +9,8 @@ module.exports = {
   },
   sparse (fd) {
     return binding.fsctl_native_sparse(fd) > 0
+  },
+  punch (fd, start, end) {
+    return binding.fsctl_native_holepunch(fd, start, end) > 0
   }
 }
